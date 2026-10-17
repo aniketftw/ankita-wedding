@@ -1,0 +1,649 @@
+/* The section is tall; the stage inside it sticks to the screen while you scroll.
+   Scroll progress is exposed to CSS as --move (0 to 1) and --door (0 to 1). */
+
+.baraat-section {
+  position: relative;
+  height: 320svh;
+  background: #e9d6de;
+}
+
+.baraat-section.is-static {
+  height: auto;
+}
+
+.baraat-stage {
+  --ps: 1;
+  --march-w: 460px;
+  --stop: 84vw;
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  min-height: 560px;
+  overflow: hidden;
+  background: linear-gradient(
+    180deg,
+    #d8c8e0 0%,
+    #ebd0d8 38%,
+    #f6dccb 66%,
+    #f7e7cf 100%
+  );
+}
+
+.is-static .baraat-stage {
+  position: relative;
+}
+
+/* sky */
+
+.baraat-sky {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.baraat-star {
+  position: absolute;
+  color: #fffaf0;
+  font-size: 0.8rem;
+  opacity: 0.8;
+  animation: baraat-twinkle 3.6s ease-in-out infinite;
+}
+
+@keyframes baraat-twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.15);
+  }
+}
+
+.baraat-lights {
+  position: absolute;
+  top: -6px;
+  right: 0;
+  left: 0;
+  display: flex;
+  justify-content: space-around;
+  padding: 0 2%;
+}
+
+.baraat-lights i {
+  display: block;
+  width: 7px;
+  height: 7px;
+  margin-top: 4px;
+  border-radius: 50%;
+  background: #ffe3a0;
+  box-shadow: 0 0 10px 3px rgba(255, 214, 120, 0.7);
+  animation: baraat-twinkle 2.6s ease-in-out infinite;
+}
+
+.baraat-lights i:nth-child(odd) {
+  margin-top: 12px;
+}
+
+/* caption */
+
+.baraat-caption {
+  position: absolute;
+  z-index: 6;
+  top: 40px;
+  left: 50%;
+  width: min(92%, 520px);
+  text-align: center;
+  transform: translateX(-50%);
+}
+
+.baraat-caption .eyebrow {
+  color: #7d6a8a;
+}
+
+.baraat-caption h3 {
+  margin: 8px 0 6px;
+  color: var(--plum);
+  font-size: clamp(2.1rem, 5.4vw, 3.4rem);
+  line-height: 1;
+}
+
+.baraat-sub {
+  margin: 0 auto 12px;
+  color: #6f6068;
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.baraat-distance,
+.baraat-cta {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 15px;
+  border: 1px solid rgba(185, 154, 99, 0.55);
+  border-radius: 999px;
+  color: #6c5d3c;
+  background: rgba(255, 253, 248, 0.82);
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.baraat-cta {
+  min-height: 42px;
+  border-color: #716a5c;
+  color: #fffdf8;
+  background: #716a5c;
+  font-size: 0.76rem;
+  transition: transform 180ms ease;
+}
+
+.baraat-cta:hover {
+  transform: translateY(-2px);
+}
+
+.baraat-shout {
+  position: absolute;
+  z-index: 9;
+  top: 42%;
+  left: 50%;
+  padding: 10px 20px;
+  border: 1px solid rgba(185, 154, 99, 0.6);
+  border-radius: 999px;
+  color: var(--plum);
+  background: rgba(255, 253, 248, 0.94);
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  font-style: italic;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  animation: baraat-pop 400ms cubic-bezier(0.2, 1.4, 0.3, 1) both;
+}
+
+@keyframes baraat-pop {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+/* hall */
+
+.baraat-hall {
+  position: absolute;
+  z-index: 2;
+  right: clamp(10px, 4vw, 70px);
+  bottom: 164px;
+  width: clamp(140px, 27vw, 300px);
+  aspect-ratio: 260 / 300;
+  perspective: 700px;
+}
+
+.hall-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.baraat-glow {
+  position: absolute;
+  top: 68.5%;
+  left: 37%;
+  width: 26%;
+  height: 31.5%;
+  border-radius: 999px 999px 0 0;
+  background: radial-gradient(circle at 50% 80%, #fff3c4, #f4c85e 70%);
+  box-shadow: 0 0 calc(var(--door) * 38px) calc(var(--door) * 12px) rgba(247, 205, 100, 0.65);
+}
+
+.baraat-door {
+  position: absolute;
+  top: 68.5%;
+  width: 13%;
+  height: 31.5%;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.12) 0 2px, transparent 2px 7px),
+    linear-gradient(180deg, #a86f4c, #8a5638);
+  border: 1px solid #6e4228;
+}
+
+.baraat-door-l {
+  left: 37%;
+  border-top-left-radius: 999px;
+  transform-origin: left center;
+  transform: rotateY(calc(var(--door) * -78deg));
+}
+
+.baraat-door-r {
+  left: 50%;
+  border-top-right-radius: 999px;
+  transform-origin: right center;
+  transform: rotateY(calc(var(--door) * 78deg));
+}
+
+/* ground */
+
+.baraat-ground {
+  position: absolute;
+  z-index: 3;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 176px;
+  background: linear-gradient(180deg, #cfdcc4, #b9ccab);
+  pointer-events: none;
+}
+
+.baraat-road {
+  position: absolute;
+  right: 0;
+  bottom: 62px;
+  left: 0;
+  height: 70px;
+  border-top: 5px dotted #f0a93a;
+  border-bottom: 5px dotted #e6798a;
+  background: linear-gradient(180deg, #e3d6c0, #d6c7ae);
+}
+
+.baraat-dashes {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: 3px;
+  background: repeating-linear-gradient(90deg, #f7efe0 0 30px, transparent 30px 60px);
+  opacity: 0.8;
+}
+
+.baraat-lamp {
+  position: absolute;
+  bottom: 132px;
+  width: 4px;
+  height: 56px;
+  background: #8a7a62;
+}
+
+.baraat-lamp::before {
+  position: absolute;
+  top: -8px;
+  left: -7px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffe7a6;
+  box-shadow: 0 0 18px 6px rgba(255, 214, 120, 0.6);
+  content: "";
+}
+
+/* the procession */
+
+.baraat-march {
+  position: absolute;
+  z-index: 4;
+  bottom: 76px;
+  left: 0;
+  /* from just off-screen to the hall gate, driven by scroll */
+  --start: calc(-1 * var(--march-w) * var(--ps) - 30px);
+  --end: calc(var(--stop) - var(--march-w) * var(--ps));
+  transform: translateX(calc(var(--start) + (var(--end) - var(--start)) * var(--move)));
+  will-change: transform;
+}
+
+.baraat-procession {
+  display: flex;
+  width: var(--march-w);
+  align-items: flex-end;
+  transform: scale(var(--ps));
+  transform-origin: left bottom;
+}
+
+.baraati {
+  position: relative;
+  flex: 0 0 auto;
+  margin-right: -6px;
+  animation: baraat-bob 0.7s ease-in-out infinite;
+}
+
+.baraati-b {
+  animation-delay: -0.25s;
+}
+
+.baraati-svg {
+  display: block;
+  width: 68px;
+  height: auto;
+}
+
+.baraati-groom {
+  flex: 0 0 auto;
+  margin-left: 8px;
+  animation: baraat-bob 0.9s ease-in-out infinite;
+}
+
+.groom-svg {
+  display: block;
+  width: 200px;
+  height: auto;
+}
+
+@keyframes baraat-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.arm-l {
+  animation: baraat-wave-l 0.7s ease-in-out infinite alternate;
+}
+
+.arm-r {
+  animation: baraat-wave-r 0.7s ease-in-out infinite alternate;
+}
+
+@keyframes baraat-wave-l {
+  from {
+    transform: rotate(-14deg);
+  }
+  to {
+    transform: rotate(16deg);
+  }
+}
+
+@keyframes baraat-wave-r {
+  from {
+    transform: rotate(14deg);
+  }
+  to {
+    transform: rotate(-16deg);
+  }
+}
+
+.stick-r {
+  animation: baraat-stick 0.35s ease-in-out infinite alternate;
+}
+
+@keyframes baraat-stick {
+  from {
+    transform: rotate(-18deg);
+  }
+  to {
+    transform: rotate(10deg);
+  }
+}
+
+.leg-a {
+  animation: baraat-trot 0.9s ease-in-out infinite alternate;
+}
+
+.leg-b {
+  animation: baraat-trot 0.9s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes baraat-trot {
+  from {
+    transform: rotate(-14deg);
+  }
+  to {
+    transform: rotate(14deg);
+  }
+}
+
+.dhol-button {
+  position: relative;
+  display: block;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.dhol-button:active .baraati-svg {
+  transform: scale(0.96);
+}
+
+.dhol-ring {
+  position: absolute;
+  top: 54%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(214, 158, 60, 0.85);
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0.4);
+  animation: dhol-ring 700ms ease-out forwards;
+}
+
+@keyframes dhol-ring {
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(3.2);
+  }
+}
+
+.dhol-cue {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  padding: 5px 11px;
+  border-radius: 999px;
+  color: #6c5d3c;
+  background: rgba(255, 253, 248, 0.94);
+  box-shadow: 0 4px 14px rgba(90, 69, 60, 0.12);
+  font-size: 0.64rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  pointer-events: none;
+  animation: dhol-cue 1.2s ease-in-out infinite;
+}
+
+@keyframes dhol-cue {
+  0%,
+  100% {
+    transform: translate(-50%, 0);
+  }
+  50% {
+    transform: translate(-50%, -6px);
+  }
+}
+
+/* hint and controls */
+
+.baraat-hint {
+  position: absolute;
+  z-index: 7;
+  bottom: 196px;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  color: #6c5d3c;
+  background: rgba(255, 253, 248, 0.88);
+  font-size: 0.68rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.baraat-controls {
+  position: absolute;
+  z-index: 7;
+  right: 0;
+  bottom: 14px;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.baraat-btn {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  border: 1px solid rgba(185, 154, 99, 0.65);
+  border-radius: 999px;
+  color: #6c5d3c;
+  background: rgba(255, 253, 248, 0.94);
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 600;
+  transition: transform 180ms ease;
+}
+
+.baraat-btn:hover {
+  transform: translateY(-1px);
+}
+
+.baraat-count {
+  padding: 6px 12px;
+  border-radius: 999px;
+  color: #6c5d3c;
+  background: rgba(255, 253, 248, 0.8);
+  font-size: 0.64rem;
+  font-weight: 600;
+}
+
+/* petals */
+
+.baraat-shower {
+  position: absolute;
+  z-index: 8;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.baraat-shower span {
+  position: absolute;
+  top: -40px;
+  line-height: 1;
+  opacity: 0;
+  animation: baraat-fall linear forwards;
+}
+
+@keyframes baraat-fall {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(0);
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.9;
+    transform: translate(var(--sway), 110svh) rotate(400deg);
+  }
+}
+
+/* fireworks on arrival */
+
+.baraat-fireworks {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  pointer-events: none;
+}
+
+.firework {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.firework i {
+  position: absolute;
+  top: 0;
+  left: -1.5px;
+  width: 3px;
+  height: 26px;
+  border-radius: 3px;
+  background: currentColor;
+  opacity: 0;
+  transform-origin: 50% 100%;
+  animation: firework-ray 1.5s ease-out 3 both;
+}
+
+@keyframes firework-ray {
+  0% {
+    opacity: 1;
+    transform: rotate(var(--a)) translateY(0) scaleY(0.2);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--a)) translateY(-84px) scaleY(1);
+  }
+}
+
+/* phones */
+
+@media (max-width: 650px) {
+  .baraat-section {
+    height: 280svh;
+  }
+
+  .baraat-stage {
+    --ps: 0.56;
+    --stop: 70vw;
+  }
+
+  .baraat-caption {
+    top: 30px;
+  }
+
+  .baraat-caption h3 {
+    font-size: 2.2rem;
+  }
+
+  .baraat-hall {
+    bottom: 164px;
+    width: 38vw;
+  }
+
+  .baraat-hint {
+    bottom: 196px;
+  }
+
+  .baraat-shout {
+    font-size: 1.15rem;
+  }
+}
+
+/* gentle on motion-sensitive guests */
+
+@media (prefers-reduced-motion: reduce) {
+  .baraati,
+  .baraati-groom,
+  .arm-l,
+  .arm-r,
+  .stick-r,
+  .leg-a,
+  .leg-b,
+  .baraat-star,
+  .baraat-lights i,
+  .dhol-cue {
+    animation: none;
+  }
+}

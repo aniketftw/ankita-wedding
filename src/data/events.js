@@ -1,0 +1,58 @@
+export const events = [
+  {
+    id: "mata-ki-chowki",
+    number: "01",
+    title: "Mata Ki Chowki",
+    date: "2026-12-05",
+    dateLabel: "Saturday, 5 December 2026",
+    time: "5:00 PM onwards",
+    venue: "Lane 4, H-50, Lakshmi Nagar, Muthi, Jammu 181205",
+    shortVenue: "Lakshmi Nagar, Muthi · Jammu",
+    theme: "chowki",
+    symbol: "✺",
+    description:
+      "We begin our celebrations with prayers, devotion, and blessings for the journey ahead.",
+  },
+  {
+    id: "mehndi",
+    number: "02",
+    title: "Mehndi",
+    date: "2026-12-10",
+    dateLabel: "Thursday, 10 December 2026",
+    time: "7:00 PM onwards",
+    venue: "KP Hotels, Begusarai",
+    shortVenue: "KP Hotels · Begusarai",
+    theme: "mehndi",
+    symbol: "❋",
+    description:
+      "An evening of henna, laughter, and beautiful memories with our favourite people.",
+  },
+  {
+    id: "haldi",
+    number: "03",
+    title: "Haldi",
+    date: "2026-12-11",
+    dateLabel: "Friday, 11 December 2026",
+    time: "11:00 AM onwards",
+    venue: "KP Hotels, Begusarai",
+    shortVenue: "KP Hotels · Begusarai",
+    theme: "haldi",
+    symbol: "✿",
+    description:
+      "A little sunshine, a little turmeric, and a whole lot of love as the festivities continue.",
+  },
+  {
+    id: "wedding",
+    number: "04",
+    title: "The Wedding",
+    date: "2026-12-11",
+    dateLabel: "Friday, 11 December 2026",
+    time: "8:00 PM onwards",
+    venue: "Bina Resort, Begusarai",
+    shortVenue: "Bina Resort · Begusarai",
+    theme: "wedding",
+    symbol: "❦",
+    description:
+      "Join us as Ankita and Durgesh begin their forever, surrounded by family, friends, and blessings.",
+  },
+];
