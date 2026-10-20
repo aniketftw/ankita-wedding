@@ -19,6 +19,7 @@ import GuestbookPreview from "./components/Guestbook";
 import MehndiArt from "./components/MehndiArt";
 import HaldiArt from "./components/HaldiArt";
 import BaraatSection from "./components/Baraat";
+import Ganesha from "./components/Ganesha";
 
 const weddingTarget = new Date("2026-12-11T20:00:00+05:30");
 
@@ -378,7 +379,7 @@ function downloadCalendarEvent(event) {
 }
 
 
-function GateOpeningExperience({ onComplete, reduceMotion }) {
+function GateOpeningExperience({ onComplete, onStrike, reduceMotion }) {
   const [striking, setStriking] = useState(false);
   const [unlocked, setUnlocked] = useState(false);
   const [opening, setOpening] = useState(false);
@@ -395,6 +396,9 @@ function GateOpeningExperience({ onComplete, reduceMotion }) {
   const strikeLock = () => {
     if (striking || unlocked || opening) return;
 
+    // Browsers only allow sound after a tap, and this is that tap.
+    onStrike?.();
+
     setStriking(true);
 
     later(() => {
@@ -403,7 +407,7 @@ function GateOpeningExperience({ onComplete, reduceMotion }) {
 
       later(() => {
         setOpening(true);
-        later(onComplete, reduceMotion ? 80 : 1600);
+        later(onComplete, reduceMotion ? 80 : 2800);
       }, reduceMotion ? 100 : 900);
     }, reduceMotion ? 80 : 550);
   };
@@ -417,8 +421,8 @@ function GateOpeningExperience({ onComplete, reduceMotion }) {
       initial={{ opacity: 1 }}
       animate={{ opacity: opening ? 0 : 1 }}
       transition={{
-        duration: reduceMotion ? 0.08 : 0.45,
-        delay: opening && !reduceMotion ? 1.1 : 0,
+        duration: reduceMotion ? 0.08 : 0.6,
+        delay: opening && !reduceMotion ? 2.1 : 0,
       }}
     >
       <div className="gate-garden" aria-hidden="true">
@@ -437,7 +441,7 @@ function GateOpeningExperience({ onComplete, reduceMotion }) {
       </div>
 
       {/* Welcome text sits above the gates, not on top of them. */}
-      <div className="gate-welcome">
+      <div className={`gate-welcome ${opening ? "is-leaving" : ""}`}>
         <span className="gate-eyebrow">
           <Sparkles size={13} />
           {unlocked ? "A LITTLE MAGIC UNLOCKED" : "YOU'RE INVITED"}
@@ -458,6 +462,15 @@ function GateOpeningExperience({ onComplete, reduceMotion }) {
 
       {/* The lock belongs to the gate itself. */}
       <div className="gate-scene">
+        {/* Revealed behind the gates as they swing open. */}
+        <div
+          className={`gate-ganesh ${opening ? "is-revealed" : ""}`}
+          aria-hidden="true"
+        >
+          <Ganesha className="gate-ganesh-art" />
+          <p className="ganesha-mantra">॥ श्री गणेशाय नमः ॥</p>
+        </div>
+
         <motion.div
           className="garden-gate garden-gate-left"
           animate={
@@ -507,7 +520,7 @@ function GateOpeningExperience({ onComplete, reduceMotion }) {
         </motion.div>
 
         {/* Lock mounted directly over the central gate seam. */}
-        <div className="gate-lock-assembly">
+        <div className={`gate-lock-assembly ${opening ? "is-leaving" : ""}`}>
           <div
             className={`gate-mounted-lock ${
               striking ? "is-shaking" : ""
@@ -550,7 +563,7 @@ function GateOpeningExperience({ onComplete, reduceMotion }) {
         </div>
       </div>
 
-      <div className="gate-instruction">
+      <div className={`gate-instruction ${opening ? "is-leaving" : ""}`}>
         {unlocked ? (
           <span>
             <Sparkles size={15} /> Unlock complete — welcome!
@@ -565,6 +578,10 @@ function GateOpeningExperience({ onComplete, reduceMotion }) {
           </span>
         )}
       </div>
+
+      {!striking && !unlocked && (
+        <p className="gate-sound-note">♪ Music plays as the gates open</p>
+      )}
 
       <div className="gate-bottom-note">
         <span />
@@ -598,26 +615,84 @@ export default function App() {
   const audioRef = useRef(null);
   const reduceMotion = useReducedMotion();
 
-  async function toggleMusic() {
-    const audio = audioRef.current;
+  const [musicAvailable, setMusicAvailable] = useState(true);
+  const fadeTimer = useRef(null);
 
-    if (!audio) {
-      setMusicEnabled((value) => !value);
-      return;
-    }
+  const MUSIC_VOLUME = 0.55;
 
-    if (musicEnabled) {
-      audio.pause();
-      setMusicEnabled(false);
-    } else {
-      try {
-        await audio.play();
-        setMusicEnabled(true);
-      } catch {
-        setMusicEnabled(false);
+  function fadeTo(audio, target, duration, done) {
+    window.clearInterval(fadeTimer.current);
+    const from = audio.volume;
+    const steps = Math.max(1, Math.round(duration / 50));
+    let step = 0;
+
+    fadeTimer.current = window.setInterval(() => {
+      step += 1;
+      audio.volume = Math.min(
+        1,
+        Math.max(0, from + (target - from) * (step / steps))
+      );
+
+      if (step >= steps) {
+        window.clearInterval(fadeTimer.current);
+        done?.();
       }
+    }, 50);
+  }
+
+  async function playMusic() {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    try {
+      audio.volume = 0; // fade in gently (phones ignore this and play at full volume)
+      await audio.play();
+      setMusicEnabled(true);
+      fadeTo(audio, MUSIC_VOLUME, 2500);
+    } catch {
+      // No track added yet, or the browser said no. The site works fine without it.
+      setMusicEnabled(false);
     }
   }
+
+  function pauseMusic() {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    setMusicEnabled(false);
+    fadeTo(audio, 0, 500, () => audio.pause());
+  }
+
+  function toggleMusic() {
+    if (musicEnabled) pauseMusic();
+    else playMusic();
+  }
+
+  // Be polite: pause when the guest switches app or tab, resume when they return.
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return undefined;
+
+    let resumeOnReturn = false;
+
+    const onVisibility = () => {
+      if (document.hidden) {
+        if (!audio.paused) {
+          resumeOnReturn = true;
+          audio.pause();
+        }
+      } else if (resumeOnReturn) {
+        resumeOnReturn = false;
+        audio.play().catch(() => {});
+      }
+    };
+
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibility);
+      window.clearInterval(fadeTimer.current);
+    };
+  }, []);
 
   const revealProps = reduceMotion
     ? {
@@ -636,15 +711,20 @@ export default function App() {
       {showGateIntro && (
         <GateOpeningExperience
           onComplete={() => setShowGateIntro(false)}
+          onStrike={playMusic}
           reduceMotion={reduceMotion}
         />
       )}
 
       <audio
         ref={audioRef}
-        src="/music/wedding-instrumental.mp3"
+        src={`${import.meta.env.BASE_URL}music/wedding-instrumental.mp3`}
         loop
-        preload="none"
+        preload="metadata"
+        onError={() => {
+          setMusicAvailable(false);
+          setMusicEnabled(false);
+        }}
       />
 
       <div className="announcement-bar">
@@ -674,16 +754,18 @@ export default function App() {
           <a href="#blessings">Blessings</a>
         </nav>
 
-        <button
-          className={`music-toggle ${musicEnabled ? "is-playing" : ""}`}
-          onClick={toggleMusic}
-          type="button"
-          aria-pressed={musicEnabled}
-          title="Optional wedding music. Add your licensed track to public/music/wedding-instrumental.mp3."
-        >
-          {musicEnabled ? <Pause size={15} /> : <Music2 size={15} />}
-          <span>{musicEnabled ? "Pause music" : "Our soundtrack"}</span>
-        </button>
+        {musicAvailable && (
+          <button
+            className={`music-toggle ${musicEnabled ? "is-playing" : ""}`}
+            onClick={toggleMusic}
+            type="button"
+            aria-pressed={musicEnabled}
+            aria-label={musicEnabled ? "Pause the music" : "Play the music"}
+          >
+            {musicEnabled ? <Pause size={15} /> : <Music2 size={15} />}
+            <span>{musicEnabled ? "Pause music" : "Play music"}</span>
+          </button>
+        )}
       </header>
 
       <section className="hero" id="home">
@@ -691,6 +773,16 @@ export default function App() {
         <div className="hero-halo" aria-hidden="true" />
 
         <div className="hero-copy">
+          <motion.div
+            className="hero-ganesh"
+            initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <Ganesha className="hero-ganesh-art" />
+            <p className="ganesha-mantra">॥ श्री गणेशाय नमः ॥</p>
+          </motion.div>
+
           <motion.p
             className="eyebrow hero-eyebrow"
             initial={reduceMotion ? false : { opacity: 0, y: 10 }}

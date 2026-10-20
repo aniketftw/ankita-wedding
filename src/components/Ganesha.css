@@ -1,0 +1,89 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@500;600&display=swap");
+
+.ganesha-mantra {
+  margin: 0;
+  color: #a8823a;
+  font-family: "Noto Serif Devanagari", var(--serif), serif;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  text-align: center;
+}
+
+/* top of the hero */
+
+.hero-ganesh {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.hero-ganesh-art {
+  width: 76px;
+  height: auto;
+  filter: drop-shadow(0 6px 14px rgba(201, 154, 67, 0.35));
+}
+
+.hero-ganesh .ganesha-mantra {
+  font-size: 0.9rem;
+}
+
+/* revealed behind the gates as they open */
+
+.gate-ganesh {
+  position: absolute;
+  z-index: 0;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) translateZ(-40px) scale(0.86);
+  transition:
+    opacity 0.9s ease 0.25s,
+    transform 1.4s cubic-bezier(0.2, 0.8, 0.2, 1) 0.1s;
+}
+
+.gate-ganesh.is-revealed {
+  opacity: 1;
+  transform: translate(-50%, -50%) translateZ(-40px) scale(1);
+}
+
+.gate-ganesh-art {
+  width: auto;
+  height: calc(min(62vh, 570px) * 0.7);
+  max-width: 88vw;
+  filter: drop-shadow(0 0 28px rgba(247, 205, 100, 0.75));
+}
+
+.gate-ganesh .ganesha-mantra {
+  font-size: clamp(1rem, 2.6vw, 1.35rem);
+}
+
+/* the welcome card steps aside so Ganesh ji can be seen */
+
+.gate-welcome.is-leaving {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.35s ease,
+    visibility 0s linear 0.35s;
+}
+
+.gate-lock-assembly.is-leaving {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+.gate-instruction.is-leaving {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
